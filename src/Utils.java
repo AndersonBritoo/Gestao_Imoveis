@@ -2,8 +2,16 @@
 import java.util.*;
 
 public class Utils {
+    
     private static Scanner sc = new Scanner(System.in);
+    public static void main(String[] args) {
+        //Podem testar cada uma das funções aqui
+    }
 
+    /* Esta função returna se o numero esta de valido com as regras defenidas pelos atributos:
+    Positivo(true) - aceita numeros positivos
+    Zero(true) - aceita o 0
+    Todos(true) - aceita qualquer numero*/
     public static boolean validarNumeroInt(int num, boolean positivo, boolean zero, boolean todos) {
 
         if (todos) {
@@ -19,6 +27,7 @@ public class Utils {
         }
     }
 
+    // Pede um numero int e valida
     public static int pedirNumeroInt(boolean positivo, boolean zero, boolean todos) {
 
         if (todos) {
@@ -44,7 +53,7 @@ public class Utils {
                 System.out.println("Numero invalido tente novamente\n");
 
             } catch (InputMismatchException e) {
-                System.out.println("Somente numeros permitidos\n");
+                System.out.println("Somente numeros inteiros permitidos\n");
                 sc.next();
             }
         }
