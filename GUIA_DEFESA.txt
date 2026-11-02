@@ -1,0 +1,202 @@
+=====================================================================
+  GUIA DE DEFESA - Sistema de Gestão de uma Imobiliária
+=====================================================================
+
+---------------------------------------------------------------------
+1. EXPLICAR O PROJETO EM 30 SEGUNDOS
+---------------------------------------------------------------------
+"O programa gere uma imobiliária pela consola. Temos três tipos de
+dados: agentes, imóveis e vendas. Cada um é uma classe (uma ficha),
+e guardamos as fichas em três ArrayList. No arranque lemos o ficheiro
+dados.txt para já haver dados de teste. Depois há um menu com as 10
+opções do enunciado. Todas as leituras do teclado são validadas, por
+isso o programa nunca rebenta."
+
+---------------------------------------------------------------------
+2. OS FICHEIROS
+---------------------------------------------------------------------
+  src/
+   TipoImovel.java     enum: APARTAMENTO, MORADIA, TERRENO, LOJA, ESCRITORIO
+   EstadoImovel.java   enum: DISPONIVEL, RESERVADO, VENDIDO
+
+   Agente.java         ficha de um agente   (+ método mostrar)
+   Imovel.java         ficha de um imóvel   (+ método mostrar)
+   Venda.java          ficha de uma venda   (+ método mostrar)
+
+   Dados.java          as 3 listas + procurar + ler o dados.txt
+   Leitura.java        ler do teclado com validação
+
+   GestaoAgentes.java  opções 1 e 10
+   GestaoImoveis.java  opções 2, 3, 4, 5 e 9
+   GestaoVendas.java   opções 6, 7 e 8
+
+   Main.java           arranque + menu
+
+  dados.txt   -> dados carregados no arranque
+  grupo.txt   -> nomes e números dos alunos
+
+Para dividir a defesa pelo grupo:
+  Pessoa A: Main + Agente + GestaoAgentes
+  Pessoa B: Imovel + enums + GestaoImoveis
+  Pessoa C: Venda + GestaoVendas
+  Pessoa D: Dados + Leitura
+
+---------------------------------------------------------------------
+3. CONCEITOS USADOS (o que tens de saber explicar)
+---------------------------------------------------------------------
+CLASSE = molde de uma ficha. Diz que campos existem.
+    class Agente { int codigo; String nome; ... }
+
+OBJETO = uma ficha concreta, criada com new.
+    Agente a = new Agente(101, "Ana", "123456789");
+
+CONSTRUTOR = método que preenche a ficha quando se faz new.
+    this.nome = nome;  -> "o campo nome DESTA ficha recebe o valor nome"
+
+ACEDER A UM CAMPO: objeto.campo
+    a.nome      im.preco      im.agente.nome
+
+ENUM = lista fechada de valores. Compara-se com ==.
+    values()   -> vetor com todas as constantes (para o menu de tipos)
+    valueOf()  -> texto para constante ("LOJA" -> TipoImovel.LOJA)
+
+ARRAYLIST = lista que cresce e encolhe.
+    add(x)  remove(x)  clear()  size()  isEmpty()
+    for (Agente a : agentes) { ... }   <- for-each: "para cada agente a da lista"
+
+MÉTODO STATIC = função que se chama com NomeDaClasse.metodo()
+    Dados.procurarAgente(101)     Leitura.lerInteiro(...)
+
+null = "não há nada". procurarAgente devolve null se não encontrar.
+
+---------------------------------------------------------------------
+4. O ARRANQUE (Dados.carregar)
+---------------------------------------------------------------------
+  Linha do ficheiro:   AGENTE;101;Ana Silva;123456789
+  split(";")       ->  {"AGENTE", "101", "Ana Silva", "123456789"}
+  campos[0] é "AGENTE" -> carregarAgente(campos)
+  Integer.parseInt("101") -> 101
+  agentes.add(new Agente(101, "Ana Silva", "123456789"))
+
+  As linhas VENDA chamam GestaoVendas.efetuarVenda(), que é o MESMO
+  método do menu -> os totais dos agentes ficam sempre certos.
+
+  O try/catch é obrigatório em Java para abrir ficheiros (o ficheiro
+  pode não existir). Se falhar, o programa avisa e começa vazio.
+
+---------------------------------------------------------------------
+5. AS 10 OPÇÕES
+---------------------------------------------------------------------
+1 Registar agente   limite de 10; código 100-999 único; nome não vazio;
+                    NIF com 9 dígitos e único; mostra o agente criado.
+
+2 Registar imóvel   precisa de pelo menos 1 agente; limite de 50 ativos;
+                    código 10000-99999 único; tipo escolhido por número;
+                    localização, área, preço, agente, comissão (%).
+                    Começa sempre DISPONIVEL.
+
+3 Atualizar imóvel  pede o código; imóvel vendido não se altera.
+                    Submenu em do-while: preço / estado / agente / comissão.
+                    Não deixa pôr VENDIDO à mão (só com uma venda).
+
+4 Listar imóveis    todos / por tipo / por agente -> usa filtrar()
+
+5 Filtrar imóveis   tipo + localização + preço máximo + estado
+                    (0 ou Enter = ignorar) -> usa filtrar()
+
+6 Registar venda    imóvel existe e não está vendido; o agente tem de ser
+                    o responsável; valor e data. Depois efetuarVenda():
+                       comissão = valor * percentagem / 100
+                       cria a Venda e junta à lista
+                       imóvel fica VENDIDO
+                       agente.totalVendas += valor
+                       agente.totalComissao += comissão
+
+7 Listar vendas     todas as vendas + comissão total de cada agente
+
+8 Estatísticas      registados, ativos, vendidos, volume (€), comissões (€)
+                    (somas com acumuladores num for-each)
+
+9 Remover imóvel    um (com confirmação S/N) ou todos (clear()).
+                    As vendas não se apagam: são histórico.
+
+10 Listar agentes   para cada agente: nome, nº de imóveis, nº de vendas,
+                    total vendido e comissão acumulada.
+
+---------------------------------------------------------------------
+6. O MÉTODO filtrar() - o mais importante para explicar
+---------------------------------------------------------------------
+Recebe 5 critérios. Para cada imóvel começa com serve = true e, se
+falhar algum critério, passa a false. No fim, se ainda servir, entra
+na lista de resultados. Um critério vazio (null, "" ou 0) é ignorado.
+
+  Listar todos      = filtrar(null, "", 0, null, null)
+  Listar por tipo   = filtrar(tipo, "", 0, null, null)
+  Listar por agente = filtrar(null, "", 0, null, agente)
+  Pesquisa          = filtrar(tipo, local, precoMax, estado, null)
+
+-> Um só método para 4 funcionalidades = sem código repetido
+   (o enunciado valoriza isto).
+
+---------------------------------------------------------------------
+7. VALIDAÇÃO (Leitura.java)
+---------------------------------------------------------------------
+lerInteiro:
+   - hasNextInt() pergunta "o que foi escrito é um inteiro?" ANTES de ler
+   - se não for, nextLine() deita a linha fora e volta a perguntar
+   - se for, verifica se está entre min e max
+   -> escrever "abc" nunca rebenta o programa
+
+Outras: texto não vazio, NIF com 9 dígitos (charAt num ciclo), data
+dd/mm/aaaa (charAt + substring), códigos e NIF únicos, limites 10/50,
+confirmação S/N antes de remover, tipo/estado escolhidos por número.
+
+Decimais escrevem-se com PONTO (1500.50) por causa do Locale.US.
+
+---------------------------------------------------------------------
+8. PERGUNTAS PROVÁVEIS
+---------------------------------------------------------------------
+P: Porque usaram classes e não vetores paralelos?
+R: Com vetores teríamos codigos[], nomes[], nifs[]... e era fácil
+   desalinhar. Com uma classe os dados de um agente ficam todos juntos.
+
+P: Porque ArrayList e não vetor?
+R: O vetor tem tamanho fixo e não dá para remover facilmente.
+   O limite de 50/10 é controlado com as constantes MAX_.
+
+P: Porque é que o Imovel tem um campo Agente e não só o código?
+R: Fica ligado diretamente ao agente: im.agente.nome. E quando a venda
+   faz im.agente.totalVendas += valor, está a mudar o mesmo agente que
+   está na lista de agentes.
+
+P: Porque a Venda guarda só o código do imóvel?
+R: Para a venda continuar no histórico se o imóvel for removido.
+
+P: == ou equals?
+R: Enums e números: ==. Texto (String): equals, porque == compararia
+   se é o mesmo objeto e não o texto.
+
+P: Para que é o sc.nextLine() depois do nextInt()?
+R: O nextInt() deixa o Enter para trás; o nextLine() limpa-o.
+
+P: O que faz split(";")?
+R: Parte o texto num vetor de Strings, cortando em cada ";".
+
+P: O que é o String.format("%.2f €", valor)?
+R: Escreve o número com 2 casas decimais. Só é usado no método dinheiro().
+
+P: Como se calcula a comissão?
+R: valor * percentagem / 100. Ex: 310000 * 3 / 100 = 9300 €.
+
+P: O que acontece se removerem um imóvel vendido?
+R: Sai da lista de imóveis, mas a venda continua em Dados.vendas,
+   por isso o volume de vendas não muda.
+
+---------------------------------------------------------------------
+9. CORRER NO INTELLIJ
+---------------------------------------------------------------------
+  File > Open > pasta Projeto.final
+  Se o src não estiver azul: botão direito > Mark Directory as > Sources Root
+  Abrir Main.java > ▶
+  O dados.txt fica na pasta Projeto.final (fora do src). Se disser que não
+  o encontra: Run > Edit Configurations > Working directory = Projeto.final

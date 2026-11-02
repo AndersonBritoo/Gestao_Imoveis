@@ -1,87 +1,27 @@
+// Uma VENDA realizada.
+// Guarda o CÓDIGO do imóvel (e não o imóvel): se o imóvel for removido,
+// a venda continua no histórico.
 public class Venda {
-    static final double COMISSAO = 5; // percentagem
 
-    static int[] codVendas = new int[100];
-    static int[] codImoveis = new int[100];
-    static int[] agenteVenda = new int[100];
-    static String[] datas = new String[100];
-    static double[] valores = new double[100];
-    static double[] comissoes = new double[100];
-    static int totalVendas = 0;
+    int numero;          // 1, 2, 3, ...
+    int codigoImovel;
+    Agente agente;       // quem vendeu
+    String data;         // dd/mm/aaaa
+    double valor;        // valor final da venda (€)
+    double comissao;     // comissão calculada (€)
 
-    public static int gerarCodVenda() {
-        int codVenda;
-        int erros;
-        do {
-            erros = 0;
-            codVenda = (int) (Math.random() * 900) + 100;
-            for (int i = 0; i < totalVendas; i++) {
-                if (codVendas[i] == codVenda) {
-                    erros++;
-                }
-            }
-        } while (erros > 0);
-        return codVenda;
+    Venda(int numero, int codigoImovel, Agente agente, String data, double valor, double comissao) {
+        this.numero = numero;
+        this.codigoImovel = codigoImovel;
+        this.agente = agente;
+        this.data = data;
+        this.valor = valor;
+        this.comissao = comissao;
     }
 
-    public static int lerCodImovel() {
-        int codImovel;
-        do {
-            System.out.println("Código do imóvel: ");
-            codImovel = Agente.sc.nextInt();
-        } while (codImovel <= 0);
-        return codImovel;
-    }
-
-    public static int lerAgenteVenda() {
-        int codAgente;
-        do {
-            System.out.println("Código do agente que fez a venda: ");
-            codAgente = Agente.sc.nextInt();
-            if (!Agente.existe(codAgente)) {
-                System.out.println("Esse agente não existe. Tente outro.");
-            }
-        } while (!Agente.existe(codAgente));
-        return codAgente;
-    }
-
-    public static String lerData() {
-        System.out.println("Data da venda (dd/mm/aaaa): ");
-        return Agente.sc.next();
-    }
-
-    public static double lerValor() {
-        double valor;
-        do {
-            System.out.println("Valor final da venda (€): ");
-            valor = Agente.sc.nextDouble();
-        } while (valor <= 0);
-        return valor;
-    }
-
-    public static void registoVenda() {
-        if (Agente.total == 0) {
-            System.out.println("Registe primeiro um agente.");
-            return;
-        }
-
-        int i = totalVendas;
-        codVendas[i] = gerarCodVenda();
-        codImoveis[i] = lerCodImovel();
-        agenteVenda[i] = lerAgenteVenda();
-        datas[i] = lerData();
-        valores[i] = lerValor();
-        comissoes[i] = valores[i] * COMISSAO / 100;
-
-        Agente.adicionarVenda(agenteVenda[i], valores[i], comissoes[i]);
-        totalVendas++;
-    }
-
-    public static void listarVendas() {
-        for (int i = 0; i < totalVendas; i++) {
-            System.out.println("Venda " + codVendas[i] + " - Imóvel " + codImoveis[i]
-                    + " - Agente " + agenteVenda[i] + " - " + datas[i]
-                    + " - " + valores[i] + " € - Comissão: " + comissoes[i] + " €");
-        }
+    void mostrar() {
+        System.out.println("Venda nº " + numero + " | " + data + " | Imóvel " + codigoImovel
+                + " | Agente: " + agente.nome + " | Valor: " + Leitura.dinheiro(valor)
+                + " | Comissão: " + Leitura.dinheiro(comissao));
     }
 }
